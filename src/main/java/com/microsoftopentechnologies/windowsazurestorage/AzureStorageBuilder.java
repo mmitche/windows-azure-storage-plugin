@@ -41,10 +41,13 @@ import hudson.plugins.copyartifact.PermalinkBuildSelector;
 import hudson.plugins.copyartifact.SavedBuildSelector;
 import hudson.plugins.copyartifact.SpecificBuildSelector;
 import hudson.plugins.copyartifact.StatusBuildSelector;
+import hudson.plugins.copyartifact.TriggeredBuildSelector;
+import hudson.plugins.copyartifact.TriggeredBuildSelector.UpstreamFilterStrategy;
 import hudson.plugins.copyartifact.WorkspaceSelector;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import jenkins.model.Jenkins;
@@ -424,16 +427,13 @@ public class AzureStorageBuilder extends Builder implements SimpleBuildStep{
 		}
 
 		public DescriptorExtensionList<BuildSelector, Descriptor<BuildSelector>> getAvailableBuildSelectorList() {
-			DescriptorExtensionList<BuildSelector, Descriptor<BuildSelector>> list = DescriptorExtensionList.createDescriptorList(Jenkins.getInstance(), BuildSelector.class);
-			// remove unneeded build selectors
-			list.remove(new DownstreamBuildSelector("", "").getDescriptor());
-			list.remove(new PermalinkBuildSelector("").getDescriptor());
-			list.remove(new LastCompletedBuildSelector().getDescriptor());
-			list.remove(WorkspaceSelector.DESCRIPTOR);
-			list.remove(SavedBuildSelector.DESCRIPTOR);
-			list.remove(ParameterizedBuildSelector.DESCRIPTOR);
-			list.remove(SpecificBuildSelector.DESCRIPTOR);
-			return list;
+                    DescriptorExtensionList<BuildSelector, Descriptor<BuildSelector>> list = DescriptorExtensionList.createDescriptorList(Jenkins.getInstance(), BuildSelector.class);
+                    list.clear();
+                    list.add(StatusBuildSelector.DESCRIPTOR);
+                    TriggeredBuildSelector.DescriptorImpl desc = new TriggeredBuildSelector.DescriptorImpl();
+                    desc.setGlobalUpstreamFilterStrategy(UpstreamFilterStrategy.UseGlobalSetting);
+                    list.add(desc);
+                    return list;
 		}
 		
 	}
