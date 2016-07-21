@@ -2,6 +2,7 @@ package com.microsoftopentechnologies.windowsazurestorage;
 
 import com.microsoftopentechnologies.windowsazurestorage.WAStoragePublisher.WAStorageDescriptor;
 import com.microsoftopentechnologies.windowsazurestorage.beans.StorageAccountInfo;
+import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.RunAction;
 import java.io.IOException;
@@ -19,7 +20,9 @@ public class AzureBlobAction implements RunAction {
 	private final boolean allowAnonymousAccess;
 	private final AzureBlob zipArchiveBlob;
 	private final List<AzureBlob> individualBlobs;
-	private final Run build;
+	private final transient Run build;
+	private String jobName;
+	private int buildNumber;
 
 	public AzureBlobAction(Run build, String storageAccountName, String containerName,
 			List<AzureBlob> individualBlobs, AzureBlob zipArchiveBlob,
@@ -30,10 +33,19 @@ public class AzureBlobAction implements RunAction {
 		this.allowAnonymousAccess = allowAnonymousAccess;
 		this.zipArchiveBlob = zipArchiveBlob;
 		this.build = build;
+		this.jobName = build.getParent().getFullName();
+		this.buildNumber = build.number;
 	}
 	
 	public Run<?,?> getBuild() {
+            if (build != null)
+            {
 		return build;
+            }
+            else
+            {
+                return ((Job)Jenkins.getInstance().getItemByFullName(this.jobName)).getBuildByNumber(this.buildNumber);
+            }
 	}
 	
 	public String getDisplayName() {
