@@ -325,7 +325,7 @@ public class WAStoragePublisher extends Recorder implements SimpleBuildStep{
 			
 			int filesUploaded = WAStorageClient.upload(run, launcher, listener, strAcc,
 					expContainerName, cntPubAccess, cleanUpContainer, expFP,
-					expVP, excludeFP, getArtifactUploadType(), individualBlobs, archiveBlobs, manageArtifacts);
+					expVP, excludeFP, getArtifactUploadType(), individualBlobs, archiveBlobs);
 
 			// Mark build unstable if no files are uploaded and the user
 			// doesn't want the build not to fail in that case.
